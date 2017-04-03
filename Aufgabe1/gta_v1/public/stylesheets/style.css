@@ -6,3 +6,23 @@ body {
 a {
   color: #00B7FF;
 }
+header{
+  background-color: #2980b9;
+}
+footer{
+  background-color: greenyellow;
+    clear: both;
+}
+
+.tagging{
+    float: left;
+}
+.discovery{
+    float: right;
+}
+.taglist{
+    float:left;
+}
+.tagmap{
+    float:right;
+}

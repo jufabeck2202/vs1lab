@@ -71,7 +71,7 @@ var gtaLocator = (function GtaLocator() {
      * zoom: Zoomfaktor der Karte
      */
     var getLocationMapSrc = function (lat, lon, tags, zoom) {
-        zoom = typeof zoom !== 'undefined' ? zoom : 10;
+        zoom = typeof zoom !== 'undefined' ? zoom : 15;
 
         if (apiKey === "YOUR API KEY HERE") {
             console.log("No API key provided.");
@@ -86,7 +86,7 @@ var gtaLocator = (function GtaLocator() {
 
         var urlString = "http://maps.googleapis.com/maps/api/staticmap?center="
             + lat + "," + lon + "&markers=%7Clabel:you%7C" + lat + "," + lon
-            + tagList + "&zoom=" + zoom + "&size=640x480&sensor=false&key=" + apiKey;
+            + tagList + "&zoom=" + zoom + "&size=438x381&sensor=false&key=" + apiKey;
 
         console.log("Generated Maps Url: " + urlString);
         return urlString;
@@ -99,6 +99,18 @@ var gtaLocator = (function GtaLocator() {
         readme: "Dieses Objekt enthält 'öffentliche' Teile des Moduls.",
 
         update: function () {
+
+            tryLocate(function (position){
+                $("#latitude").val(getLatitude(position));
+                $("#longitude").val(getLongitude(position));
+                $("#latitudeCord").val(getLatitude(position));
+                $("#longitudeCord").val(getLongitude(position));
+                $("#result-img").attr("src",getLocationMapSrc(getLatitude(position),getLongitude(position)));
+
+            },function (msg) {
+                alert(msg);
+            });
+
             // TODO Hier Inhalt der Funktion "update" ergänzen
         }
 
@@ -111,6 +123,7 @@ var gtaLocator = (function GtaLocator() {
  * des Skripts.
  */
 $(document).ready(function () {
+     gtaLocator.update();
 
     // TODO Hier den Aufruf für updateLocation einfügen
 });

@@ -84,15 +84,27 @@ var gtaLocator = (function GtaLocator() {
             tagList += "&markers=%7Clabel:" + tag.name
                 + "%7C" + tag.latitude + "," + tag.longitude;
         });
-        https://www.google.com/maps/embed/v1/view?key=AIzaSyDUBEEfdMyM8zzA9Sp38wS23pWuDklA6uY%20&center=-33.8569,151.2152%20&zoom=18%20&maptype=satellite
-        var iframeString= "https://www.google.com/maps/embed/v1/view?key="+apiKeyIframe+"&center="+ lat + "," + lon         +"&zoom="+zoom;
+        //google map
+        var myLatLng = {lat: lat, lng: lon};
+
+        var map = new google.maps.Map(document.getElementById('googleMap'), {
+            zoom: zoom,
+            center: myLatLng
+        });
+
+        var marker = new google.maps.Marker({
+            position: myLatLng,
+            map: map,
+            title: 'Location'
+        });
+
 
         var urlString = "http://maps.googleapis.com/maps/api/staticmap?center="
             + lat + "," + lon + "&markers=%7Clabel:you%7C" + lat + "," + lon
             + tagList + "&zoom=" + zoom + "&size=438x381&sensor=false&key=" + apiKey;
 
         console.log("Generated Maps Url: " + urlString);
-        return iframeString;
+        return urlString;
     };
 
     return { // Start öffentlicher Teil des Moduls ...
@@ -104,21 +116,25 @@ var gtaLocator = (function GtaLocator() {
         update: function () {
 
             tryLocate(function (position){
-                $("#latitude").val(getLatitude(position));
+                getLocationMapSrc(getLatitude(position),getLongitude(position))
+
+                /*$("#latitude").val(getLatitude(position));
                 $("#longitude").val(getLongitude(position));
                 $("#latitudeCord").val(getLatitude(position));
                 $("#longitudeCord").val(getLongitude(position));
-                $("#result-img").attr("src",getLocationMapSrc(getLatitude(position),getLongitude(position)));
+                $("#result-img").attr("src",);*/
 
             },function (msg) {
                 alert(msg);
             });
 
-            // TODO Hier Inhalt der Funktion "update" ergänzen
         }
 
     }; // ... Ende öffentlicher Teil
 })();
+
+
+
 
 /**
  * $(document).ready wartet, bis die Seite komplett geladen wurde. Dann wird die
@@ -128,5 +144,6 @@ var gtaLocator = (function GtaLocator() {
 $(document).ready(function () {
      gtaLocator.update();
 
-    // TODO Hier den Aufruf für updateLocation einfügen
 });
+
+

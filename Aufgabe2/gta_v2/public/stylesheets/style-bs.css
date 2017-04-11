@@ -36,8 +36,12 @@ footer{
   float:left;
 
 }
-.tagmap{
+#googleMap{
+  margin-top: 10px;
+  margin-bottom: 10px;
   padding: 20px;
   padding-right: 0px;
   float: right;
+  width:570px;
+  height:380px;
 }

@@ -60,6 +60,7 @@ var gtaLocator = (function GtaLocator() {
 
     // Hier Google Maps API Key eintragen
     var apiKey = "AIzaSyDuJ_mLGpU8xST2FndEnJ9tJ89PyHi_Nm4";
+    var apiKeyIframe="AIzaSyDUBEEfdMyM8zzA9Sp38wS23pWuDklA6uY";
 
     /**
      * Funktion erzeugt eine URL, die auf die Karte verweist.
@@ -83,13 +84,15 @@ var gtaLocator = (function GtaLocator() {
             tagList += "&markers=%7Clabel:" + tag.name
                 + "%7C" + tag.latitude + "," + tag.longitude;
         });
+        https://www.google.com/maps/embed/v1/view?key=AIzaSyDUBEEfdMyM8zzA9Sp38wS23pWuDklA6uY%20&center=-33.8569,151.2152%20&zoom=18%20&maptype=satellite
+        var iframeString= "https://www.google.com/maps/embed/v1/view?key="+apiKeyIframe+"&center="+ lat + "," + lon         +"&zoom="+zoom;
 
         var urlString = "http://maps.googleapis.com/maps/api/staticmap?center="
             + lat + "," + lon + "&markers=%7Clabel:you%7C" + lat + "," + lon
             + tagList + "&zoom=" + zoom + "&size=438x381&sensor=false&key=" + apiKey;
 
         console.log("Generated Maps Url: " + urlString);
-        return urlString;
+        return iframeString;
     };
 
     return { // Start öffentlicher Teil des Moduls ...

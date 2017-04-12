@@ -118,11 +118,11 @@ var gtaLocator = (function GtaLocator() {
             tryLocate(function (position){
                 getLocationMapSrc(getLatitude(position),getLongitude(position))
 
-                /*$("#latitude").val(getLatitude(position));
+                $("#latitude").val(getLatitude(position));
                 $("#longitude").val(getLongitude(position));
                 $("#latitudeCord").val(getLatitude(position));
                 $("#longitudeCord").val(getLongitude(position));
-                $("#result-img").attr("src",);*/
+
 
             },function (msg) {
                 alert(msg);

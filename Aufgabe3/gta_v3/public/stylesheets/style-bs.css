@@ -1,0 +1,47 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+header{
+  background-color: darkgray;
+  border-radius: 5px;
+
+
+}
+header img{
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+footer{
+  padding:10px;
+  background-color: darkgrey;
+  border-radius: 5px;
+  clear: both;
+}
+
+.tagging{
+  float: left;
+}
+.discovery{
+  max-width: 900px;
+  float: right;
+}
+
+.taglist{
+  margin: 20px;
+  float:left;
+
+}
+#googleMap{
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 20px;
+  padding-right: 0px;
+  float: right;
+  width:570px;
+  height:380px;
+}

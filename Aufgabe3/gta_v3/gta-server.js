@@ -27,6 +27,10 @@ app.set('view engine', 'ejs');
  * Konfiguriere den Pfad für statische Dateien.
  * Teste das Ergebnis im Browser unter 'http://localhost:3000/'.
  */
+//path schaut automatich in views nach
+app.get("/",function(req, res) {
+    res.render('gta');
+});
 
 // TODO: CODE ERGÄNZEN
 
@@ -34,6 +38,12 @@ app.set('view engine', 'ejs');
  * Konstruktor für GeoTag Objekte.
  * GeoTag Objekte sollen min. alle Felder des 'tag-form' Formulars aufnehmen.
  */
+function GeoTag(latitude,longitude,name,hashtag) {
+    this.latitude = latitude;
+    this.longitude = longitude;
+    this.name = name;
+    this.hashtag = hashtag;
+}
 
 // TODO: CODE ERGÄNZEN
 

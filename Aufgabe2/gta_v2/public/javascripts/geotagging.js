@@ -111,7 +111,6 @@ var gtaLocator = (function GtaLocator() {
                 alert(msg);
             });
 
-            // TODO Hier Inhalt der Funktion "update" ergänzen
         }
 
     }; // ... Ende öffentlicher Teil
@@ -125,5 +124,4 @@ var gtaLocator = (function GtaLocator() {
 $(document).ready(function () {
      gtaLocator.update();
 
-    // TODO Hier den Aufruf für updateLocation einfügen
 });

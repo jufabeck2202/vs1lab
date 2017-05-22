@@ -1,3 +1,9 @@
+//fragen:
+//static
+//git
+//respnes
+
+
 /**
  * Template für Übungsaufgabe VS1lab/Aufgabe3
  * Das Skript soll die Serverseite der gegebenen Client Komponenten im
@@ -9,12 +15,12 @@
  */
 
 var http = require('http');
-//var path = require('path');
+var path = require('path');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var express = require('express');
-
-var app = express();
+var app;
+app = express();
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({
     extended: false
@@ -28,8 +34,10 @@ app.set('view engine', 'ejs');
  * Teste das Ergebnis im Browser unter 'http://localhost:3000/'.
  */
 
-
 // TODO: CODE ERGÄNZEN
+//path schaut automatich in views nach
+//app.use(express.static("gta"));
+app.use(express.static("public"));
 
 /**
  * Konstruktor für GeoTag Objekte.
@@ -37,6 +45,15 @@ app.set('view engine', 'ejs');
  */
 
 // TODO: CODE ERGÄNZEN
+function GeoTag(latitude,longitude,name,hashtag) {
+    this.latitude = latitude;
+    this.longitude = longitude;
+    this.name = name;
+    this.hashtag = hashtag;
+}
+
+
+
 
 /**
  * Modul für 'In-Memory'-Speicherung von GeoTags mit folgenden Komponenten:
@@ -49,6 +66,37 @@ app.set('view engine', 'ejs');
 
 // TODO: CODE ERGÄNZEN
 
+var geoTags =  [];
+
+//adds geo tag
+function addGeoTag (gt){
+    geoTags.push(gt)
+}
+//finds name
+function searchGtName (name){
+   return geoTags.filter(function (gt){return gt.name === name});
+}
+//delete function, filters all elements exept the one you wanted to delete
+function deleteGt(gt){
+     geoTags = geoTags.filter(function(el) { return el.name !==gt.name; });
+
+}
+//filters all GeoTags inside a radius (x-center_x)^2 + (y - center_y)^2 < radius^2
+function searchGtWithCenter(center_lat,center_long,rad){
+    return geoTags.filter(function(el) {
+        return Math.sqrt(el.latitude-center_lat)+
+            Math.sqrt(el.longitude-center_long)<=Math.sqrt(rad)});
+}
+
+function searchGt(gt,rad){
+    return searchGtWithCenter(gt.latitude,gt.longitude,rad);
+}
+var testGt = new GeoTag(1,1,"Name1","#bc");
+addGeoTag(testGt);
+var testGt2 = new GeoTag(112,11212,"nameTest","#ab");
+addGeoTag(testGt2);
+
+
 /**
  * Route mit Pfad '/' für HTTP 'GET' Requests.
  * (http://expressjs.com/de/4x/api.html#app.get.method)
@@ -58,7 +106,18 @@ app.set('view engine', 'ejs');
  * Als Response wird das ejs-Template ohne Geo Tag Objekte gerendert.
  */
 
-// TODO: CODE ERGÄNZEN START
+function createMainPage(req ,res, next){
+
+        res.render("gta.ejs",{
+           taglist:geoTags
+        });
+
+    next();
+}
+
+
+app.get('/', createMainPage);
+app.post('/tagging', saveGt, createMainPage);
 
 /**
  * Route mit Pfad '/tagging' für HTTP 'POST' Requests.
@@ -73,7 +132,12 @@ app.set('view engine', 'ejs');
  * Die Objekte liegen in einem Standard Radius um die Koordinate (lat, lon).
  */
 
-// TODO: CODE ERGÄNZEN START
+function saveGt(req,res,next) {
+    var gt = new GeoTag(req.body.INlatitude,req.body.INlongitude,req.body.INname,req.body.INhashtag);
+    addGeoTag(gt);
+    next()
+}
+
 
 /**
  * Route mit Pfad '/discovery' für HTTP 'POST' Requests.
@@ -86,7 +150,18 @@ app.set('view engine', 'ejs');
  * Die Objekte liegen in einem Standard Radius um die Koordinate (lat, lon).
  * Falls 'term' vorhanden ist, wird nach Suchwort gefiltert.
  */
+app.post('/discovery', filterTags);
 
+
+function filterTags(req ,res, next){
+    console.log(req.body.term);
+
+    var filteredTags = searchGtName(req.body.term);
+    console.log(filteredTags);
+    res.render("gta.ejs",{
+        taglist:filteredTags
+    });
+}
 // TODO: CODE ERGÄNZEN
 
 /**

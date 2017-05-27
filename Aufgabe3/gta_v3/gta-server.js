@@ -68,7 +68,7 @@ function addGeoTag (gt){
 }
 //finds name
 function searchGtName (name){
-   return geoTags.filter(function (gt){return gt.name.toLowerCase() === name.toLowerCase();});
+   return geoTags.filter(function (gt){return gt.name.toLowerCase().replace(" ", "") === name.toLowerCase().replace(" ", "");;});
 }
 //delete function, filters all elements exept the one you wanted to delete
 function deleteGt(gt){
@@ -88,9 +88,9 @@ function searchGt(gt,rad){
 
 
 
-var testGt = new GeoTag(51.503454,-0.119562,"London Eye","#London");
+var testGt = new GeoTag(51.503454,-0.119562,"Eye","#London");
 addGeoTag(testGt);
-var testGt2 = new GeoTag(51.499633,-0.124755,"Palace of Westminster","#London");
+var testGt2 = new GeoTag(51.499633,-0.124755,"Palace","#London");
 addGeoTag(testGt2);
 
 

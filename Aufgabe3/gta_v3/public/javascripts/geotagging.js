@@ -6,8 +6,6 @@
  * "console.log" schreibt auf die Konsole des Browsers
  * Das Konsolenfenster muss im Browser explizit geöffnet werden.
  */
-console.log("The script is going to start...");
-
 // Es folgen einige Deklarationen, die aber noch nicht ausgeführt werden ...
 
 /**
@@ -101,7 +99,6 @@ var gtaLocator = (function GtaLocator() {
 
         // Loop through our array of markers & place each one on the map
         for( i = 0; i < taglist.length; i++ ) {
-            console.log(taglist[i])
             var position = new google.maps.LatLng(taglist[i].latitude, taglist[i].longitude);
             bounds.extend(position);
             marker = new google.maps.Marker({
@@ -184,7 +181,6 @@ $(document).ready(function () {
     var latitude = $("#latitudeCord").val();
     var longitude = $("#longitudeCord").val();
     var xhr = new XMLHttpRequest();
-    console.log(latitude+"+"+longitude)
 
 
 
@@ -192,7 +188,6 @@ $(document).ready(function () {
         gtaLocator.update();
 
     }else{
-        console.log("update"+latitude+"+"+longitude)
         gtaLocator.refresh(parseFloat(latitude),parseFloat(longitude));
     }
 

@@ -93,7 +93,8 @@ var gtaLocator = (function GtaLocator() {
         map = new google.maps.Map(document.getElementById('googleMap'));
         map.setTilt(45);
         //adds current Potiton
-        taglist.push({latitude:lat,longitude:lon,name:"Current Position"});
+
+        taglist.push({latitude:$("#latitudeCord").val(),longitude:$("#longitudeCord").val(),name:"Current Position"});
 
         // Display multiple markers on a map
         var infoWindow = new google.maps.InfoWindow(), marker, i;
@@ -149,12 +150,11 @@ var gtaLocator = (function GtaLocator() {
             tryLocate(function (position){
 
 
-
                 $("#latitude").val(getLatitude(position));
                 $("#longitude").val(getLongitude(position));
-
                 $("#latitudeCord").val(getLatitude(position));
                 $("#longitudeCord").val(getLongitude(position));
+
                 getLocationMapSrc(getLatitude(position),getLongitude(position))
 
 
@@ -184,6 +184,7 @@ $(document).ready(function () {
     var latitude = $("#latitudeCord").val();
     var longitude = $("#longitudeCord").val();
     var xhr = new XMLHttpRequest();
+    console.log(latitude+"+"+longitude)
 
 
 
@@ -191,7 +192,7 @@ $(document).ready(function () {
         gtaLocator.update();
 
     }else{
-
+        console.log("update"+latitude+"+"+longitude)
         gtaLocator.refresh(parseFloat(latitude),parseFloat(longitude));
     }
 

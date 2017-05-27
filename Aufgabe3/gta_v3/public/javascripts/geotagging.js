@@ -60,7 +60,7 @@ var gtaLocator = (function GtaLocator() {
 
     // Hier Google Maps API Key eintragen
     var apiKey = "AIzaSyDuJ_mLGpU8xST2FndEnJ9tJ89PyHi_Nm4";
-    var apiKeyIframe="AIzaSyDUBEEfdMyM8zzA9Sp38wS23pWuDklA6uY";
+    //var apiKeyIframe="AIzaSyDUBEEfdMyM8zzA9Sp38wS23pWuDklA6uY";
 
     /**
      * Funktion erzeugt eine URL, die auf die Karte verweist.
@@ -84,26 +84,57 @@ var gtaLocator = (function GtaLocator() {
             tagList += "&markers=%7Clabel:" + tag.name
                 + "%7C" + tag.latitude + "," + tag.longitude;
         });
-        //google map
-        var myLatLng = {lat: lat, lng: lon};
 
-        var map = new google.maps.Map(document.getElementById('googleMap'), {
-            zoom: zoom,
-            center: myLatLng
-        });
 
-        var marker = new google.maps.Marker({
-            position: myLatLng,
-            map: map,
-            title: 'Location'
-        });
+        var map;
+        var bounds = new google.maps.LatLngBounds();
+
+        // Display a map on the page
+        map = new google.maps.Map(document.getElementById('googleMap'));
+        map.setTilt(45);
+        //adds current Potiton
+        taglist.push({latitude:lat,longitude:lon,name:"Current Position"});
+
+        // Display multiple markers on a map
+        var infoWindow = new google.maps.InfoWindow(), marker, i;
+
+        // Loop through our array of markers & place each one on the map
+        for( i = 0; i < taglist.length; i++ ) {
+            console.log(taglist[i])
+            var position = new google.maps.LatLng(taglist[i].latitude, taglist[i].longitude);
+            bounds.extend(position);
+            marker = new google.maps.Marker({
+                position: position,
+                map: map,
+                title: taglist[i].name
+            });
+
+
+            // Allow each marker to have an info window
+            google.maps.event.addListener(marker, 'click', (function(marker, i) {
+                return function() {
+                    infoWindow.setContent(taglist[i].name);
+                    infoWindow.open(map, marker);
+                }
+            })(marker, i));
+
+            // Automatically center the map fitting all markers on the screen
+            map.fitBounds(bounds);
+
+        }
+
+
+
+
+        map.fitBounds(bounds);
+        map.panToBounds(bounds);
 
 
         var urlString = "http://maps.googleapis.com/maps/api/staticmap?center="
             + lat + "," + lon + "&markers=%7Clabel:you%7C" + lat + "," + lon
             + tagList + "&zoom=" + zoom + "&size=438x381&sensor=false&key=" + apiKey;
 
-        console.log("Generated Maps Url: " + urlString);
+        // console.log("Generated Maps Url: " + urlString);
         return urlString;
     };
 
@@ -116,18 +147,26 @@ var gtaLocator = (function GtaLocator() {
         update: function () {
 
             tryLocate(function (position){
-                getLocationMapSrc(getLatitude(position),getLongitude(position))
+
+
 
                 $("#latitude").val(getLatitude(position));
                 $("#longitude").val(getLongitude(position));
+
                 $("#latitudeCord").val(getLatitude(position));
                 $("#longitudeCord").val(getLongitude(position));
+                getLocationMapSrc(getLatitude(position),getLongitude(position))
+
 
 
             },function (msg) {
                 alert(msg);
             });
 
+        },
+
+        refresh: function (lat,lon){
+            getLocationMapSrc(lat,lon)
         }
 
     }; // ... Ende öffentlicher Teil
@@ -142,8 +181,19 @@ var gtaLocator = (function GtaLocator() {
  * des Skripts.
  */
 $(document).ready(function () {
-     gtaLocator.update();
+    var latitude = $("#latitudeCord").val();
+    var longitude = $("#longitudeCord").val();
+    var xhr = new XMLHttpRequest();
+
+
+
+    if( latitude===""|| longitude=== ""){
+        gtaLocator.update();
+
+    }else{
+
+        gtaLocator.refresh(parseFloat(latitude),parseFloat(longitude));
+    }
 
 });
-
 

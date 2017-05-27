@@ -34,17 +34,12 @@ app.set('view engine', 'ejs');
  * Teste das Ergebnis im Browser unter 'http://localhost:3000/'.
  */
 
-// TODO: CODE ERGÄNZEN
-//path schaut automatich in views nach
-//app.use(express.static("gta"));
 app.use(express.static("public"));
 
 /**
  * Konstruktor für GeoTag Objekte.
  * GeoTag Objekte sollen min. alle Felder des 'tag-form' Formulars aufnehmen.
  */
-
-// TODO: CODE ERGÄNZEN
 function GeoTag(latitude,longitude,name,hashtag) {
     this.latitude = latitude;
     this.longitude = longitude;
@@ -64,7 +59,6 @@ function GeoTag(latitude,longitude,name,hashtag) {
  * - Funktion zum Löschen eines Geo Tags.
  */
 
-// TODO: CODE ERGÄNZEN
 
 var geoTags =  [];
 
@@ -74,7 +68,7 @@ function addGeoTag (gt){
 }
 //finds name
 function searchGtName (name){
-   return geoTags.filter(function (gt){return gt.name === name});
+   return geoTags.filter(function (gt){return gt.name.toLowerCase() === name.toLowerCase();});
 }
 //delete function, filters all elements exept the one you wanted to delete
 function deleteGt(gt){
@@ -91,9 +85,12 @@ function searchGtWithCenter(center_lat,center_long,rad){
 function searchGt(gt,rad){
     return searchGtWithCenter(gt.latitude,gt.longitude,rad);
 }
-var testGt = new GeoTag(1,1,"Name1","#bc");
+
+
+
+var testGt = new GeoTag(51.503454,-0.119562,"London Eye","#London");
 addGeoTag(testGt);
-var testGt2 = new GeoTag(112,11212,"nameTest","#ab");
+var testGt2 = new GeoTag(51.499633,-0.124755,"Palace of Westminster","#London");
 addGeoTag(testGt2);
 
 
@@ -107,17 +104,26 @@ addGeoTag(testGt2);
  */
 
 function createMainPage(req ,res, next){
+    var longitude = null;
+    var latitude = null;
+
+    if(req.body.longitude && req.body.latitude){
+        longitude = req.body.longitude;
+        latitude = req.body.latitude;
+    }
 
         res.render("gta.ejs",{
-           taglist:geoTags
+           taglist:geoTags,
+            latitude:latitude,
+            longitude:longitude
         });
 
     next();
 }
 
 
+
 app.get('/', createMainPage);
-app.post('/tagging', saveGt, createMainPage);
 
 /**
  * Route mit Pfad '/tagging' für HTTP 'POST' Requests.
@@ -131,9 +137,10 @@ app.post('/tagging', saveGt, createMainPage);
  * Als Response wird das ejs-Template mit Geo Tag Objekten gerendert.
  * Die Objekte liegen in einem Standard Radius um die Koordinate (lat, lon).
  */
+app.post('/tagging', saveGt, createMainPage);
 
 function saveGt(req,res,next) {
-    var gt = new GeoTag(req.body.INlatitude,req.body.INlongitude,req.body.INname,req.body.INhashtag);
+    var gt = new GeoTag(req.body.latitude,req.body.longitude,req.body.INname,req.body.INhashtag);
     addGeoTag(gt);
     next()
 }
@@ -154,15 +161,33 @@ app.post('/discovery', filterTags);
 
 
 function filterTags(req ,res, next){
-    console.log(req.body.term);
 
-    var filteredTags = searchGtName(req.body.term);
-    console.log(filteredTags);
+    var filteredTags;
+
+    if(req.body.term) {
+
+        filteredTags = searchGtName(req.body.term);
+    }else {
+
+        filteredTags = geoTags;
+    }
+
+    var longitude = null;
+    var latitude = null;
+
+    if(req.body.longitude && req.body.latitude){
+        longitude = req.body.longitude;
+        latitude = req.body.latitude;
+    }
+
+    console.log(longitude);
     res.render("gta.ejs",{
-        taglist:filteredTags
+        taglist:filteredTags,
+        latitude:latitude,
+        longitude:longitude
     });
+
 }
-// TODO: CODE ERGÄNZEN
 
 /**
  * Setze Port und speichere in Express.

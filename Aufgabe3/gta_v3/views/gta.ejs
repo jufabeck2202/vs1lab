@@ -45,10 +45,11 @@
 					<fieldset>
 						<legend>Geo Tag</legend>
 						<label for="latitude">Latitude:</label><br>
-						<input class="form-control" placeholder="3.12334" name= "INlatitude" id="latitude"  required pattern="[0-9]+(\.[0-9]+)"><br>
+						<input class="form-control" placeholder="3.12334" name= "latitude" id="latitude"  required pattern="[0-9]+(\.[0-9]+)" value="<% if (latitude!==undefined) { %><%= latitude%><% } %>">
+						<br>
 
 						<label for="longitude">Longitude:</label><br>
-						<input class="form-control" placeholder="3.12334" name= "INlongitude" id="longitude" required pattern="[0-9]+(\.[0-9]+)"><br>
+						<input class="form-control" placeholder="3.12334" name= "longitude" id="longitude" required pattern="[0-9]+(\.[0-9]+)" value="<% if (longitude!==undefined) { %><%=longitude%><% } %>"><br>
 
 						<label for="name">Name:</label><br>
 						<input class="form-control" placeholder="max 10 Zeichen" name= "INname" id="name" type="text" required
@@ -78,21 +79,30 @@
 						<input type="text" class="form-control" name="term" id="searchterm" placeholder="Search for...">
 						<span class="input-group-btn">
                             <button class="btn btn-default" type="submit">Search</button>
-                            <button class="btn btn-danger" type="button">Clear</button>
+                            <button class="btn btn-danger" type="submit">Clear</button>
                         </span>
+						<input id="latitudeCord" name="latitude" type="hidden" value="<% if (latitude!==undefined) { %><%=latitude%><% } %>">
+						<input id="longitudeCord" name="longitude" type="hidden" value="<% if (longitude!==undefined) { %><%=longitude%><% } %>">
 					</div>
-					<input id="latitudeCord" type="hidden">
-					<input id="longitudeCord" type="hidden">
+
 				</fieldset>
 			</form>
 
 
 			<!-- ############### Aufgabe1a Form2 Ende -->
+            <% if (taglist) { %>
+
+			<script>
+                var taglist = <%- JSON.stringify(taglist) %>;
+			</script>
+            <% } %>
+
 
 			<div class="taglist">
 				<ul class="list-group" id="results">
-                    <% if (taglist !== undefined) taglist.forEach(function(gtag) { %>
-					<li><%= gtag.name %> (<%= gtag.latitude %>,<%= gtag.longitude %>) <%= gtag.hashtag %> </li>
+                    <% if (taglist !== undefined) taglist.forEach(function(gtag) {  %>
+
+					<li class="list-group-item list-group-item-info" ><%= gtag.name %> (<%= gtag.latitude %>,<%= gtag.longitude %>) <%= gtag.hashtag %> </li>
                     <% }); %>
 				</ul>
 			</div>

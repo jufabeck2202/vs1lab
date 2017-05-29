@@ -68,7 +68,7 @@ function addGeoTag (gt){
 }
 //finds name
 function searchGtName (name){
-   return geoTags.filter(function (gt){return gt.name.toLowerCase().replace(" ", "") === name.toLowerCase().replace(" ", "");;});
+   return geoTags.filter(function (gt){return gt.name.toLowerCase().replace(" ", "") === name.toLowerCase().replace(" ", "");});
 }
 //delete function, filters all elements exept the one you wanted to delete
 function deleteGt(gt){

@@ -1,0 +1,135 @@
+
+	<!DOCTYPE html>
+	<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport"
+			  content="width=device-width, initial-scale=1">
+		<title>GeoTagApp</title>
+		<link rel='stylesheet' href='./stylesheets/style-bs.css'/>
+		<link rel="stylesheet" href="./stylesheets/bootstrap.min.css">
+
+	</head>
+
+	<body>
+
+	<header >
+		<div class="container">
+			<img src="./images/location.png" width="100"
+				 alt="an image of a map and location">
+			<nav class="navbar navbar-default">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<a class="navbar-brand" href="#">Geo tag App</a>
+					</div>
+					<ul class="nav navbar-nav">
+						<li class="active"><a href="/">Home</a></li>
+						<li><a href="#">Help</a></li>
+						<li><a href="#">About</a></li>
+					</ul>
+				</div>
+			</nav>
+		</div>
+	</header>
+
+	<main class="container">
+
+		<section class="tagging">
+			<h2>Tagging</h2>
+
+			<!-- ############### Aufgabe1a Form1 Start -->
+			<form id="tag-form" action="/tagging" method="post">
+				<div class="form-group">
+					<fieldset>
+						<legend>Geo Tag</legend>
+						<label for="latitude">Latitude:</label><br>
+						<input class="form-control" placeholder="3.12334" name= "latitude" id="latitude"  required pattern="[0-9]+(\.[0-9]+)" value="<% if (latitude!==undefined) { %><%= latitude%><% } %>">
+						<br>
+
+						<label for="longitude">Longitude:</label><br>
+						<input class="form-control" placeholder="3.12334" name= "longitude" id="longitude" required pattern="[0-9]+(\.[0-9]+)" value="<% if (longitude!==undefined) { %><%=longitude%><% } %>"><br>
+
+						<label for="name">Name:</label><br>
+						<input class="form-control" placeholder="max 10 Zeichen" name= "INname" id="name" type="text" required
+							   maxlength="10"><br>
+
+						<label for="hashtag">hashtag:</label><br>
+						<input class="form-control" placeholder="# + max 10 Zeichen" name= "INhashtag" id="hashtag" type="text"
+							   pattern="#[a-zA-Z]{1,10}"><br>
+
+						<input class="btn btn-primary btn-block" type="submit" value="add">
+					</fieldset>
+				</div>
+			</form>
+			<!-- ############### Aufgabe1a Form1 Ende -->
+
+		</section>
+
+		<section class="discovery">
+			<h2>Discovery</h2>
+
+			<!-- ############### Aufgabe1a Form2 Start -->
+			<form id="filter-form" action="/discovery" method="post">
+				<fieldset>
+					<legend>Search</legend>
+
+					<div class="input-group">
+						<input type="text" class="form-control" name="term" id="searchterm" placeholder="Search for...">
+						<span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">Search</button>
+                            <button class="btn btn-danger" type="submit">Clear</button>
+                        </span>
+						<input id="latitudeCord" name="latitude" type="hidden" value="<% if (latitude!==undefined) { %><%=latitude%><% } %>">
+						<input id="longitudeCord" name="longitude" type="hidden" value="<% if (longitude!==undefined) { %><%=longitude%><% } %>">
+					</div>
+
+				</fieldset>
+			</form>
+
+
+			<!-- ############### Aufgabe1a Form2 Ende -->
+            <% if (taglist) { %>
+
+			<script>
+                var taglist = <%- JSON.stringify(taglist) %>;
+			</script>
+            <% } %>
+
+
+			<div class="taglist">
+				<ul class="list-group" id="results">
+                    <% if (taglist !== undefined) taglist.forEach(function(gtag) {  %>
+
+					<li class="list-group-item list-group-item-info" ><%= gtag.name %> (<%= gtag.latitude %>,<%= gtag.longitude %>) <%= gtag.hashtag %> </li>
+                    <% }); %>
+				</ul>
+			</div>
+
+			<div id="googleMap" style=""></div>
+
+
+
+		</section>
+
+	</main>
+
+	<footer>
+		<span>2017 by LKIT</span>
+	</footer>
+
+	<!-- Load JavaScripts
+                ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+	<script src="/javascripts/bootstrap.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+	<script src="./javascripts/geotagging.js"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCzgIa0_mwbxZPG6cE_16FbLcU3tM4hHNs"></script>
+
+
+</body>
+</html>
+
+

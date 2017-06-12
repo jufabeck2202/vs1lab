@@ -2,6 +2,21 @@
 
 // Befehle werden sequenziell abgearbeitet ...
 
+
+/**
+ * Geo taggint object
+ * @param latitude
+ * @param longitude
+ * @param name
+ * @param hashtag
+ * @constructor
+ */
+function GeoTag(latitude, longitude, name, hashtag) {
+    this.latitude = latitude;
+    this.longitude = longitude;
+    this.name = name;
+    this.hashtag = hashtag;
+}
 /**
  * "console.log" schreibt auf die Konsole des Browsers
  * Das Konsolenfenster muss im Browser explizit geöffnet werden.
@@ -11,6 +26,9 @@
 /**
  * GeoTagApp Locator Modul
  */
+var curLat = null;
+var curLon = null;
+
 var gtaLocator = (function GtaLocator() {
 
     // Private Member
@@ -56,33 +74,7 @@ var gtaLocator = (function GtaLocator() {
         return position.coords.longitude;
     };
 
-    // Hier Google Maps API Key eintragen
-    var apiKey = "AIzaSyDuJ_mLGpU8xST2FndEnJ9tJ89PyHi_Nm4";
-    //var apiKeyIframe="AIzaSyDUBEEfdMyM8zzA9Sp38wS23pWuDklA6uY";
-
-    /**
-     * Funktion erzeugt eine URL, die auf die Karte verweist.
-     * Falls die Karte geladen werden soll, muss oben ein API Key angegeben
-     * sein.
-     *
-     * lat, lon : aktuelle Koordinaten (hier zentriert die Karte)
-     * tags : Array mit Geotag Objekten, das auch leer bleiben kann
-     * zoom: Zoomfaktor der Karte
-     */
-    var getLocationMapSrc = function (lat, lon, tags, zoom) {
-        zoom = typeof zoom !== 'undefined' ? zoom : 15;
-
-        if (apiKey === "YOUR API KEY HERE") {
-            console.log("No API key provided.");
-            return "images/mapview.jpg";
-        }
-
-        var tagList = "";
-        if (typeof tags !== 'undefined') tags.forEach(function (tag) {
-            tagList += "&markers=%7Clabel:" + tag.name
-                + "%7C" + tag.latitude + "," + tag.longitude;
-        });
-
+    var getLocationMapSrc = function (lat, lon, taglist) {
 
         var map;
         var bounds = new google.maps.LatLngBounds();
@@ -92,13 +84,12 @@ var gtaLocator = (function GtaLocator() {
         map.setTilt(45);
         //adds current Potiton
 
-        taglist.push({latitude:$("#latitudeCord").val(),longitude:$("#longitudeCord").val(),name:"Current Position"});
 
         // Display multiple markers on a map
         var infoWindow = new google.maps.InfoWindow(), marker, i;
 
         // Loop through our array of markers & place each one on the map
-        for( i = 0; i < taglist.length; i++ ) {
+        for (i = 0; i < taglist.length; i++) {
             var position = new google.maps.LatLng(taglist[i].latitude, taglist[i].longitude);
             bounds.extend(position);
             marker = new google.maps.Marker({
@@ -109,8 +100,8 @@ var gtaLocator = (function GtaLocator() {
 
 
             // Allow each marker to have an info window
-            google.maps.event.addListener(marker, 'click', (function(marker, i) {
-                return function() {
+            google.maps.event.addListener(marker, 'click', (function (marker, i) {
+                return function () {
                     infoWindow.setContent(taglist[i].name);
                     infoWindow.open(map, marker);
                 }
@@ -122,74 +113,113 @@ var gtaLocator = (function GtaLocator() {
         }
 
 
-
-
         map.fitBounds(bounds);
         map.panToBounds(bounds);
 
-
-        var urlString = "http://maps.googleapis.com/maps/api/staticmap?center="
-            + lat + "," + lon + "&markers=%7Clabel:you%7C" + lat + "," + lon
-            + tagList + "&zoom=" + zoom + "&size=438x381&sensor=false&key=" + apiKey;
-
-        // console.log("Generated Maps Url: " + urlString);
-        return urlString;
     };
 
     return { // Start öffentlicher Teil des Moduls ...
 
-        // Public Member
 
-        readme: "Dieses Objekt enthält 'öffentliche' Teile des Moduls.",
+        init: function () {
 
-        update: function () {
+            tryLocate(function (position) {
+                curLat = getLatitude(position);
+                curLon = getLongitude(position);
+                $("#latitude").val(curLat);
+                $("#longitude").val(curLon);
+                getList();
 
-            tryLocate(function (position){
-
-
-                $("#latitude").val(getLatitude(position));
-                $("#longitude").val(getLongitude(position));
-                $("#latitudeCord").val(getLatitude(position));
-                $("#longitudeCord").val(getLongitude(position));
-
-                getLocationMapSrc(getLatitude(position),getLongitude(position))
-
-
-
-            },function (msg) {
+            }, function (msg) {
                 alert(msg);
             });
 
         },
 
-        refresh: function (lat,lon){
-            getLocationMapSrc(lat,lon)
+        refresh: function (taglist) {
+
+            getLocationMapSrc(curLat, curLon, taglist);
+
+
         }
+// ... Ende öffentlicher Teil
+}})();
 
-    }; // ... Ende öffentlicher Teil
-})();
+function updateList(jsonResponse) {
+    taglist = JSON.parse(jsonResponse);
+    var $discovery = $("#results");
+    $discovery.empty();
+    gtaLocator.refresh(taglist);
+    taglist.forEach(function (gtag) {
+        $discovery.append('<li class=list-group-item >' + gtag.name + ' (' + gtag.latitude + ',' + gtag.longitude + ') ' + gtag.hashtag + ' </li>');
+    });
 
 
+}
+function getList() {
+    var ajax = new XMLHttpRequest();
+    ajax.open("GET", 'http://localhost:3000/geotags', true);
+    ajax.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    ajax.send();
+    ajax.onreadystatechange = function () {
+        if (this.readyState === 4 && this.status === 200) {
+            updateList(this.responseText);
+        }
+    }
 
 
+}
 /**
  * $(document).ready wartet, bis die Seite komplett geladen wurde. Dann wird die
  * angegebene Funktion aufgerufen. An dieser Stelle beginnt die eigentliche Arbeit
  * des Skripts.
  */
+
 $(document).ready(function () {
-    var latitude = $("#latitudeCord").val();
-    var longitude = $("#longitudeCord").val();
-    var xhr = new XMLHttpRequest();
+    gtaLocator.init();
 
+    document.getElementById("submit").addEventListener("click", function () {
+        lat = document.getElementById("latitude").value;
+        lon = document.getElementById("longitude").value;
+        name = document.getElementById("name").value;
+        hash = document.getElementById("hashtag").value;
 
+        var gt = new GeoTag(lat, lon, name, hash);
+        var ajax = new XMLHttpRequest();
+        ajax.open("POST", "http://localhost:3000/geotags", true);
+        ajax.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        ajax.send(JSON.stringify(gt));
+        document.getElementById("name").value = "";
+        document.getElementById("hashtag").value = "";
+        getList();
 
-    if( latitude===""|| longitude=== ""){
-        gtaLocator.update();
+    });
+    //listener for search
+    document.getElementById("search").addEventListener("click", function () {
+        var term = document.getElementById("searchterm").value;
+        search(term);
+    });
+    //listener for clear
+    document.getElementById("clear").addEventListener("click", function () {
+        search();
+         document.getElementById("searchterm").value = "";
+    });
 
-    }else{
-        gtaLocator.refresh(parseFloat(latitude),parseFloat(longitude));
+    function search(term) {
+        var ajax = new XMLHttpRequest();
+        if(term === undefined)
+            ajax.open("GET", 'http://localhost:3000/geotags', true);
+        else
+            ajax.open("GET", 'http://localhost:3000/geotags?search=' + term, true);
+        ajax.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        ajax.send();
+        ajax.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                updateList(this.responseText);
+            }
+        }
     }
+
 
 });
 

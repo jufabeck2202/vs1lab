@@ -22,9 +22,12 @@ var express = require('express');
 var app;
 app = express();
 app.use(logger('dev'));
+app.use(bodyParser.json());
+
 app.use(bodyParser.urlencoded({
     extended: false
 }));
+
 
 // Setze ejs als View Engine
 app.set('view engine', 'ejs');
@@ -40,14 +43,12 @@ app.use(express.static("public"));
  * Konstruktor für GeoTag Objekte.
  * GeoTag Objekte sollen min. alle Felder des 'tag-form' Formulars aufnehmen.
  */
-function GeoTag(latitude,longitude,name,hashtag) {
+function GeoTag(latitude, longitude, name, hashtag) {
     this.latitude = latitude;
     this.longitude = longitude;
     this.name = name;
     this.hashtag = hashtag;
 }
-
-
 
 
 /**
@@ -60,37 +61,41 @@ function GeoTag(latitude,longitude,name,hashtag) {
  */
 
 
-var geoTags =  [];
+var geoTags = [];
 
 //adds geo tag
-function addGeoTag (gt){
+function addGeoTag(gt) {
     geoTags.push(gt)
 }
 //finds name
-function searchGtName (name){
-   return geoTags.filter(function (gt){return gt.name.toLowerCase().replace(" ", "") === name.toLowerCase().replace(" ", "");;});
+function searchGtName(name) {
+    return geoTags.filter(function (gt) {
+        return gt.name.toLowerCase().replace(" ", "") === name.toLowerCase().replace(" ", "")
+    });
 }
 //delete function, filters all elements exept the one you wanted to delete
-function deleteGt(gt){
-     geoTags = geoTags.filter(function(el) { return el.name !==gt.name; });
+function deleteGt(gt) {
+    geoTags = geoTags.filter(function (el) {
+        return el.name !== gt.name;
+    });
 
 }
 //filters all GeoTags inside a radius (x-center_x)^2 + (y - center_y)^2 < radius^2
-function searchGtWithCenter(center_lat,center_long,rad){
-    return geoTags.filter(function(el) {
-        return Math.sqrt(el.latitude-center_lat)+
-            Math.sqrt(el.longitude-center_long)<=Math.sqrt(rad)});
+function searchGtWithCenter(center_lat, center_long, rad) {
+    return geoTags.filter(function (el) {
+        return Math.sqrt(el.latitude - center_lat) +
+            Math.sqrt(el.longitude - center_long) <= Math.sqrt(rad)
+    });
 }
 
-function searchGt(gt,rad){
-    return searchGtWithCenter(gt.latitude,gt.longitude,rad);
+function searchGt(gt, rad) {
+    return searchGtWithCenter(gt.latitude, gt.longitude, rad);
 }
 
 
-
-var testGt = new GeoTag(51.503454,-0.119562,"Eye","#London");
+var testGt = new GeoTag(51.503454, -0.119562, "Eye", "#London");
 addGeoTag(testGt);
-var testGt2 = new GeoTag(51.499633,-0.124755,"Palace","#London");
+var testGt2 = new GeoTag(51.499633, -0.124755, "Palace", "#London");
 addGeoTag(testGt2);
 
 
@@ -103,95 +108,49 @@ addGeoTag(testGt2);
  * Als Response wird das ejs-Template ohne Geo Tag Objekte gerendert.
  */
 
-function createMainPage(req ,res, next){
+
+
+app.get('/', function (req, res, next) {
     var longitude = null;
     var latitude = null;
 
-    if(req.body.longitude && req.body.latitude){
+    if (req.body.longitude && req.body.latitude) {
         longitude = req.body.longitude;
         latitude = req.body.latitude;
     }
-
-        res.render("gta.ejs",{
-           taglist:geoTags,
-            latitude:latitude,
-            longitude:longitude
-        });
-
-    next();
-}
-
-
-
-app.get('/', createMainPage);
-
-/**
- * Route mit Pfad '/tagging' für HTTP 'POST' Requests.
- * (http://expressjs.com/de/4x/api.html#app.post.method)
- *
- * Requests enthalten im Body die Felder des 'tag-form' Formulars.
- * (http://expressjs.com/de/4x/api.html#req.body)
- *
- * Mit den Formulardaten wird ein neuer Geo Tag erstellt und gespeichert.
- *
- * Als Response wird das ejs-Template mit Geo Tag Objekten gerendert.
- * Die Objekte liegen in einem Standard Radius um die Koordinate (lat, lon).
- */
-app.post('/tagging', saveGt, createMainPage);
-
-function saveGt(req,res,next) {
-    var gt = new GeoTag(req.body.latitude,req.body.longitude,req.body.INname,req.body.INhashtag);
-    addGeoTag(gt);
-    next()
-}
-
-
-/**
- * Route mit Pfad '/discovery' für HTTP 'POST' Requests.
- * (http://expressjs.com/de/4x/api.html#app.post.method)
- *
- * Requests enthalten im Body die Felder des 'filter-form' Formulars.
- * (http://expressjs.com/de/4x/api.html#req.body)
- *
- * Als Response wird das ejs-Template mit Geo Tag Objekten gerendert.
- * Die Objekte liegen in einem Standard Radius um die Koordinate (lat, lon).
- * Falls 'term' vorhanden ist, wird nach Suchwort gefiltert.
- */
-app.post('/discovery', filterTags);
-
-
-function filterTags(req ,res, next){
-
-    var filteredTags;
-
-    if(req.body.term) {
-
-        filteredTags = searchGtName(req.body.term);
-    }else {
-
-        filteredTags = geoTags;
-    }
-
-    var longitude = null;
-    var latitude = null;
-
-    if(req.body.longitude && req.body.latitude){
-        longitude = req.body.longitude;
-        latitude = req.body.latitude;
-    }
-
-    console.log(longitude);
-    res.render("gta.ejs",{
-        taglist:filteredTags,
-        latitude:latitude,
-        longitude:longitude
+    res.render("gta.ejs", {
+        taglist: geoTags,
+        latitude: latitude,
+        longitude: longitude
     });
 
-}
+    next();
+});
 
-/**
- * Setze Port und speichere in Express.
- */
+
+app.post('/geotags', function (req, res) {
+    var gt = new GeoTag(req.body.latitude, req.body.longitude, req.body.name, req.body.hashtag);
+    addGeoTag(gt);
+    res.set('Location', 'http://localhost:3000/geotags/' + geoTags.length - 1);
+
+});
+
+app.get('/geotags', function (req, res) {
+
+    if (req.query.search) {
+
+        tags = searchGtName(req.query.search);
+    } else {
+
+        tags = geoTags;
+    }
+    res.send(tags);
+});
+app.get('/geotags/:id*', function (req, res) {
+    res.send(geoTags[req.params.id]);
+
+});
+
 
 var port = 3000;
 app.set('port', port);

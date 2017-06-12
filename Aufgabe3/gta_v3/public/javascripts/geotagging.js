@@ -92,7 +92,7 @@ var gtaLocator = (function GtaLocator() {
         map.setTilt(45);
         //adds current Potiton
 
-        taglist.push({latitude:$("#latitudeCord").val(),longitude:$("#longitudeCord").val(),name:"Current Position"});
+        //taglist.push({latitude:$("#latitudeCord").val(),longitude:$("#longitudeCord").val(),name:"Current Position"});
 
         // Display multiple markers on a map
         var infoWindow = new google.maps.InfoWindow(), marker, i;
@@ -190,6 +190,7 @@ $(document).ready(function () {
     }else{
         gtaLocator.refresh(parseFloat(latitude),parseFloat(longitude));
     }
+
 
 });
 

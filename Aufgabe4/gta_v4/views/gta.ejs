@@ -40,26 +40,26 @@
 			<h2>Tagging</h2>
 
 			<!-- ############### Aufgabe1a Form1 Start -->
-			<form id="tag-form" action="/tagging" method="post">
+			<form id="tag-form" >
 				<div class="form-group">
 					<fieldset>
 						<legend>Geo Tag</legend>
 						<label for="latitude">Latitude:</label><br>
-						<input class="form-control" placeholder="3.12334" name= "latitude" id="latitude"  required pattern="[0-9]+(\.[0-9]+)" value="<% if (latitude!==undefined) { %><%= latitude%><% } %>">
+						<input class="form-control" placeholder="3.12334" name= "latitude" id="latitude"  required pattern="[0-9]+(\.[0-9]+)" >
 						<br>
 
 						<label for="longitude">Longitude:</label><br>
-						<input class="form-control" placeholder="3.12334" name= "longitude" id="longitude" required pattern="[0-9]+(\.[0-9]+)" value="<% if (longitude!==undefined) { %><%=longitude%><% } %>"><br>
+						<input class="form-control" placeholder="3.12334" name= "longitude" id="longitude" required pattern="[0-9]+(\.[0-9]+)"><br>
 
 						<label for="name">Name:</label><br>
-						<input class="form-control" placeholder="max 10 Zeichen" name= "INname" id="name" type="text" required
+						<input class="form-control" placeholder="max 10 Zeichen" name= "INname" id="name" type="text" c
 							   maxlength="10"><br>
 
 						<label for="hashtag">hashtag:</label><br>
 						<input class="form-control" placeholder="# + max 10 Zeichen" name= "INhashtag" id="hashtag" type="text"
 							   pattern="#[a-zA-Z]{1,10}"><br>
 
-						<input class="btn btn-primary btn-block" type="submit" value="add">
+						<input class="btn btn-primary btn-block" id="submit" type="button" value="add">
 					</fieldset>
 				</div>
 			</form>
@@ -71,18 +71,16 @@
 			<h2>Discovery</h2>
 
 			<!-- ############### Aufgabe1a Form2 Start -->
-			<form id="filter-form" action="/discovery" method="post">
+			<form id="filter-form">
 				<fieldset>
 					<legend>Search</legend>
 
 					<div class="input-group">
-						<input type="text" class="form-control" name="term" id="searchterm" placeholder="Search for...">
+						<input type="text" onkeypress="return event.keyCode!=13" class="form-control" name="term" id="searchterm" placeholder="Search for...">
 						<span class="input-group-btn">
-                            <button class="btn btn-default" type="submit">Search</button>
-                            <button class="btn btn-danger" type="submit">Clear</button>
+                            <button class="btn btn-default" id="search" type="button">Search</button>
+                            <button class="btn btn-danger" type="button" id="clear">Clear</button>
                         </span>
-						<input id="latitudeCord" name="latitude" type="hidden" value="<% if (latitude!==undefined) { %><%=latitude%><% } %>">
-						<input id="longitudeCord" name="longitude" type="hidden" value="<% if (longitude!==undefined) { %><%=longitude%><% } %>">
 					</div>
 
 				</fieldset>
@@ -90,20 +88,11 @@
 
 
 			<!-- ############### Aufgabe1a Form2 Ende -->
-            <% if (taglist) { %>
-
-			<script>
-                var taglist = <%- JSON.stringify(taglist) %>;
-			</script>
-            <% } %>
 
 
 			<div class="taglist">
-				<ul class="list-group" id="results">
-                    <% if (taglist !== undefined) taglist.forEach(function(gtag) {  %>
+				<ul class="list-group list-group-info" id="results">
 
-					<li class="list-group-item list-group-item-info" ><%= gtag.name %> (<%= gtag.latitude %>,<%= gtag.longitude %>) <%= gtag.hashtag %> </li>
-                    <% }); %>
 				</ul>
 			</div>
 

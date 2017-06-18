@@ -59,7 +59,7 @@
 						<input class="form-control" placeholder="# + max 10 Zeichen" name= "INhashtag" id="hashtag" type="text"
 							   pattern="#[a-zA-Z]{1,10}"><br>
 
-						<input class="btn btn-primary btn-block" id="submit" type="button" value="add">
+						<input class="btn btn-primary btn-block" id="submit" type="submit" value="add">
 					</fieldset>
 				</div>
 			</form>
@@ -76,9 +76,9 @@
 					<legend>Search</legend>
 
 					<div class="input-group">
-						<input type="text" onkeypress="return event.keyCode!=13" class="form-control" name="term" id="searchterm" placeholder="Search for...">
+						<input type="text"  class="form-control" name="term" id="searchterm" placeholder="Search for...">
 						<span class="input-group-btn">
-                            <button class="btn btn-default" id="search" type="button">Search</button>
+                            <button class="btn btn-default" id="search" type="submit">Search</button>
                             <button class="btn btn-danger" type="button" id="clear">Clear</button>
                         </span>
 					</div>

@@ -57,6 +57,7 @@ var gtaLocator = (function GtaLocator() {
                         msg = "An unknown error occurred.";
                         break;
                 }
+                console.log(error);
                 onerror(msg);
             });
         } else {
@@ -178,7 +179,8 @@ function getList() {
 $(document).ready(function () {
     gtaLocator.init();
 
-    document.getElementById("submit").addEventListener("click", function () {
+    $("#tag-form").submit( function () {
+        event.preventDefault();
         lat = document.getElementById("latitude").value;
         lon = document.getElementById("longitude").value;
         name = document.getElementById("name").value;
@@ -195,7 +197,8 @@ $(document).ready(function () {
 
     });
     //listener for search
-    document.getElementById("search").addEventListener("click", function () {
+    $("#filter-form").submit( function () {
+        event.preventDefault();
         var term = document.getElementById("searchterm").value;
         search(term);
     });

@@ -1,5 +1,4 @@
 # VS1lab - Laborübungen Verteilte Systeme 1 (Sommer 2017)
-# Wenn ihr hier die Lösungen abschaut dann gebt dem projekt doch bitte wenigstens ein Stern
 Ziel des Labors ist die praktische Anwendung verschiedener Web Technologien aus der Vorlesung. Dazu wird in mehreren Schritten eine komplette Web Anwendung erstellt. In jedem Schritt wird jeweils ein Bereich von Web Technologien genauer betrachtet.
 
 ## Die Geo Tagging App (GTA)
